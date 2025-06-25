@@ -31,7 +31,7 @@ pub struct Ext4BlockWrapper<K: KernelDevOp> {
 }
 
 impl<K: KernelDevOp> Ext4BlockWrapper<K> {
-    pub fn new(block_dev: K::DevType) -> Result<Self, i32> {
+    pub fn new(block_dev: K::DevType, part_offset: usize) -> Result<Self, i32> {
         // note this ownership
         let devt_user = Box::into_raw(Box::new(block_dev)) as *mut c_void;
         //let devt_user = devt.as_mut() as *mut _ as *mut c_void;
@@ -60,7 +60,7 @@ impl<K: KernelDevOp> Ext4BlockWrapper<K> {
 
         let ext4dev = ext4_blockdev {
             bdif: Box::into_raw(Box::new(ext4bdif)),
-            part_offset: 0,
+            part_offset: part_offset as u64,
             part_size: 0 * EXT4_DEV_BSIZE as u64,
             bc: Box::into_raw(bcbuf),
             lg_bsize: 0,
@@ -130,7 +130,6 @@ impl<K: KernelDevOp> Ext4BlockWrapper<K> {
             }
         };
 
-        (*bdev).part_offset = 0;
         (*bdev).part_size = cur as u64; //ftello()
         (*(*bdev).bdif).ph_bcnt = (*bdev).part_size / (*(*bdev).bdif).ph_bsize as u64;
         EOK as _
