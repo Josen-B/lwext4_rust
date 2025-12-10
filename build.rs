@@ -57,6 +57,7 @@ fn main() {
                 c_path.to_str().expect("invalid path of lwext4"),
             ])
             .arg(&format!("ARCH={}", arch))
+            .env("CFLAGS", "-DCONFIG_EXT4_BLOCKDEVS_COUNT=8")
             .status()
             .expect("failed to execute process: make lwext4");
 
@@ -74,6 +75,7 @@ fn main() {
                     c_path.to_str().expect("invalid path of lwext4"),
                 ])
                 .arg(&format!("ARCH={}", arch))
+                .env("CFLAGS", "-DCONFIG_EXT4_BLOCKDEVS_COUNT=4")
                 .status()
                 .expect("failed to execute process: make lwext4");
             count += 1;
